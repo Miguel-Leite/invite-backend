@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id String @id
+
+  name     String
+  email    String
+  password String
+
+  removed DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  @@map("users")
+}
+
+model Customers {
+  id String @id
+
+  avatar   String?
+  name     String
+  email    String
+  password String?
+
+  removed DateTime?
+
+  created_at           DateTime               @default(now())
+  updated_at           DateTime               @default(now())
+  events               Events[]
+  Invites              Invites[]
+  paymentOfInvitations PaymentOfInvitations[]
+
+  @@map("customers")
+}
+
+model Events {
+  id          String @id
+  customersId String
+
+  logo        String?
+  name        String
+  description String?
+
+  removed DateTime?
+
+  status Boolean? @default(false)
+
+  startDate DateTime
+  endDate   DateTime
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  customer             Customers              @relation(fields: [customersId], references: [id])
+  eventPayments        EventPayments[]
+  invites              Invites[]
+  paymentOfInvitations PaymentOfInvitations[]
+
+  @@map("events")
+}
+
+model Invites {
+  id String @id
+
+  customersId String
+  eventsId    String
+
+  removed DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  customer Customers @relation(fields: [customersId], references: [id])
+  event    Events    @relation(fields: [eventsId], references: [id])
+
+  @@map("invites")
+}
+
+model EventPayments {
+  id       String @id
+  eventsId String
+
+  reference String
+  code      String
+  value     Float
+  status    String
+
+  removed DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  event Events @relation(fields: [eventsId], references: [id])
+
+  @@map("eventPayments")
+}
+
+model PaymentOfInvitations {
+  id          String @id
+  eventsId    String
+  customersId String
+
+  reference String
+  code      String
+  value     Float
+  status    String
+
+  removed DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @default(now())
+
+  event    Events    @relation(fields: [eventsId], references: [id])
+  customer Customers @relation(fields: [customersId], references: [id])
+
+  @@map("paymentOfInvitations")
+}
