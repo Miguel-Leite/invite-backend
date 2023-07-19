@@ -6,7 +6,7 @@ export interface CustomerProps {
   avatar?: string | null;
   name: string;
   email: string;
-  password: string;
+  password?: string | null;
   removed?: Date | null | undefined;
   created_at: Date;
   updated_at: Date;
@@ -55,11 +55,11 @@ export class Customer {
     return this.props.email;
   }
 
-  public set password(password: string) {
+  public set password(password: string | undefined | null) {
     this.props.password = password;
   }
 
-  public get password(): string {
+  public get password(): string | undefined | null {
     return this.props.password;
   }
 
